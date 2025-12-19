@@ -69,20 +69,24 @@ action:
             target_summary: "{{ prefix }}{{ repeat.item.recipe.name }}"
             target_date: "{{ repeat.item.day.split('T')[0] }}"
             
-            # Logic for clean line breaks / Logik für saubere Zeilenumbrüche
+            # Logic for clean line breaks & Null-Check
             recipe_description: >
-              {% set desc = repeat.item.recipe.description | default('No instructions / Keine Zubereitung') %}
-              {% set items = desc | replace('<li>', 'LINESTART- ') | replace('</li>', 'LINEEND') 
-                                  | replace('<p>', 'LINESTART') | replace('</p>', 'LINEEND') 
-                                  | replace('<br>', 'LINEENDLINESTART') | striptags %}
-              {% set ns = namespace(final_desc="") %}
-              {% for line in items.split('LINEEND') %}
-                {% if line | trim | length > 0 %}
-                  {% set line_clean = line | replace('LINESTART', '') | trim %}
-                  {% set ns.final_desc = ns.final_desc ~ line_clean ~ '\n' %}
-                {% endif %}
-              {% endfor %}
-              {{ ns.final_desc | trim }}
+              {% set desc = repeat.item.recipe.description %}
+              {% if desc == none or desc | trim | length == 0 %}
+                {{ "No instructions provided / Keine Zubereitung hinterlegt" }}
+              {% else %}
+                {% set items = desc | replace('<li>', 'LINESTART- ') | replace('</li>', 'LINEEND') 
+                                    | replace('<p>', 'LINESTART') | replace('</p>', 'LINEEND') 
+                                    | replace('<br>', 'LINEENDLINESTART') | striptags %}
+                {% set ns = namespace(final_desc="") %}
+                {% for line in items.split('LINEEND') %}
+                  {% if line | trim | length > 0 %}
+                    {% set line_clean = line | replace('LINESTART', '') | trim %}
+                    {% set ns.final_desc = ns.final_desc ~ line_clean ~ '\n' %}
+                  {% endif %}
+                {% endfor %}
+                {{ ns.final_desc | trim }}
+              {% endif %}
             
             existing_on_that_day: >
               {% set events = future_events[target_calendar].events %}
