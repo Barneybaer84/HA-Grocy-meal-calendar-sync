@@ -12,11 +12,19 @@ This blueprint automates the synchronization of your **Grocy** meal plan with a 
 
 ---
 
-## 🚀 Features
+## 🚀 Features / Funktionen
+
+### English
 * **Smart Sync:** Only adds meals if they don't already exist on that specific day (Duplicate Check).
 * **Customizable Prefix:** Add a custom text like "Meal: " or "Dinner: " before the recipe name.
 * **Flexible Timing:** Choose exactly when the sync should happen every night.
 * **Stability:** Optimized to avoid parser errors and handle missing data gracefully.
+
+### Deutsch
+* **Intelligenter Sync:** Fügt Mahlzeiten nur hinzu, wenn für diesen spezifischen Tag noch kein Eintrag mit demselben Namen existiert (Duplikatsprüfung).
+* **Anpassbares Präfix:** Erlaube einen eigenen Text vor dem Rezeptnamen, z. B. „Essen: “ oder „Abendessen: “.
+* **Flexible Zeitplanung:** Wähle selbst, zu welcher Uhrzeit die Synchronisierung jede Nacht stattfinden soll.
+* **Stabilität:** Optimierter Code, um Parser-Fehler zu vermeiden und auch bei fehlenden Daten stabil zu laufen.
 
 ---
 
