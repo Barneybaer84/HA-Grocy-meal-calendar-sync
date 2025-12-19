@@ -11,7 +11,7 @@ blueprint:
     WICHTIG: Erfordert einen beschreibbaren Kalender (z. B. Google Calendar oder ein manuell erstellter Lokaler Kalender-Helfer).
     Hinweis: Aufgrund von Einschränkungen in Home Assistant können bestehende Termine nicht automatisch gelöscht oder verschoben werden.
 
-  source_url: https://github.com/YOUR_USERNAME/YOUR_REPO/blob/main/grocy_meal_plan_sync.yaml
+  source_url: https://raw.githubusercontent.com/Barneybaer84/HA-Grocy-meal-calendar-sync/refs/heads/main/grocy-meal-calendar_sync.yaml
 
   domain: automation
   input:
