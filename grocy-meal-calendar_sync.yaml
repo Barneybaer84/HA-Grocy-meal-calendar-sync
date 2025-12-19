@@ -1,0 +1,99 @@
+blueprint:
+  name: "Grocy: Sync Meal Plan to Calendar"
+  description: >
+    (EN): Automatically synchronizes your Grocy meal plan to a Home Assistant calendar. 
+    It checks for existing events on the specific day to avoid duplicates.
+    IMPORTANT: Requires a writable calendar (e.g., Google Calendar or a manually created Local Calendar helper).
+    Note: Due to Home Assistant limitations, existing events cannot be deleted or moved automatically.
+    
+    (DE): Synchronisiert den Grocy-Speiseplan automatisch mit einem Kalender. 
+    Prüft für jeden Tag einzeln, ob ein Eintrag bereits existiert, um Duplikate zu vermeiden.
+    WICHTIG: Erfordert einen beschreibbaren Kalender (z. B. Google Calendar oder ein manuell erstellter Lokaler Kalender-Helfer).
+    Hinweis: Aufgrund von Einschränkungen in Home Assistant können bestehende Termine nicht automatisch gelöscht oder verschoben werden.
+
+  source_url: https://github.com/YOUR_USERNAME/YOUR_REPO/blob/main/grocy_meal_plan_sync.yaml
+
+  domain: automation
+  input:
+    calendar_entity:
+      name: "Calendar / Kalender"
+      description: "Writable target calendar / Beschreibbarer Ziel-Kalender."
+      selector:
+        entity:
+          filter:
+            domain: calendar
+    grocy_sensor:
+      name: "Grocy Meal Sensor"
+      description: "The sensor providing the meal plan (usually sensor.grocy_meal_plan)."
+      default: sensor.grocy_meal_plan
+      selector:
+        entity:
+          filter:
+            domain: sensor
+    execution_time:
+      name: "Execution Time / Ausführungszeit"
+      description: "When should the sync run daily?"
+      default: "02:00:00"
+      selector:
+        time: {}
+    event_prefix:
+      name: "Event Prefix / Präfix"
+      description: "Text before the recipe name (e.g., 'Meal: ')."
+      default: "Meal: "
+      selector:
+        text: {}
+
+mode: single
+
+trigger:
+  - platform: time
+    at: !input execution_time
+
+action:
+  - variables:
+      # Map inputs to variables for use in templates
+      target_calendar: !input calendar_entity
+      meal_sensor: !input grocy_sensor
+      prefix: !input event_prefix
+
+  # Fetch existing events for the next 7 days (168 hours)
+  - target:
+      entity_id: "{{ target_calendar }}"
+    data:
+      duration:
+        hours: 168
+    response_variable: future_events
+    action: calendar.get_events
+
+  - variables:
+      # Extract meal plan from sensor attributes
+      grocy_meals: >
+        {% set meals = state_attr(meal_sensor, 'meals') | default([]) %}
+        {{ meals }}
+
+  - repeat:
+      for_each: "{{ grocy_meals }}"
+      sequence:
+        - variables:
+            target_summary: "{{ prefix }}{{ repeat.item.recipe.name }}"
+            target_date: "{{ repeat.item.day.split('T')[0] }}"
+            # Filter existing events to check for same day AND same summary
+            existing_on_that_day: >
+              {% set events = future_events[target_calendar].events %}
+              {{ events | selectattr('start', 'search', target_date) 
+                        | selectattr('summary', '==', target_summary) | list }}
+        
+        # Proceed only if no matching event exists for that specific day
+        - condition: template
+          value_template: "{{ existing_on_that_day | length == 0 }}"
+
+        # Create the calendar event
+        - target:
+            entity_id: "{{ target_calendar }}"
+          data:
+            start_date: "{{ target_date }}"
+            end_date: >-
+              {{ (as_datetime(repeat.item.day) +
+              timedelta(days=1)).strftime("%Y-%m-%d") }}
+            summary: "{{ target_summary }}"
+          action: calendar.create_event
