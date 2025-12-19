@@ -58,10 +58,19 @@ Aufgrund von Einschränkungen im Home Assistant Core können Automatisierungen d
 
 ---
 
-## 🛠 Installation
-1. Upload the `grocy_meal_plan_sync.yaml` to your `blueprints/automation/` folder or use the **Import Button** above.
+## 🛠 Installation / Einrichtung
+
+### English
+1. Upload the `grocy_meal_plan_sync.yaml` to your `/blueprints/automation/` folder or use the **Import Button** above.
 2. Go to **Settings -> Automations & Scenes -> Blueprints**.
-3. Create a new automation from this blueprint and select your sensor and calendar.
+3. Create a new automation from this blueprint.
+4. Select your `sensor.grocy_meal_plan` and your target calendar.
+
+### Deutsch
+1. Lade die Datei `grocy_meal_plan_sync.yaml` in deinen Ordner `/blueprints/automation/` hoch oder nutze den **Import-Button** oben.
+2. Gehe zu **Einstellungen -> Automatisierungen & Szenen -> Blueprints**.
+3. Erstelle eine neue Automatisierung aus diesem Blueprint.
+4. Wähle deinen `sensor.grocy_meal_plan` und deinen Ziel-Kalender aus.
 
 ---
 
