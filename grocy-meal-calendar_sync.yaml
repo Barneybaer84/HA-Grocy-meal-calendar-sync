@@ -1,40 +1,38 @@
 blueprint:
-  name: "Grocy: Sync Meal Plan to Calendar"
+  name: "Grocy: Sync Meal Plan to Calendar / Speiseplan Kalender-Sync"
   description: >
-    Automatically synchronizes your Grocy meal plan to a Home Assistant calendar. 
-    It ensures clean formatting with bullet points for recipe descriptions and 
-    checks for existing events on the specific day to avoid duplicates.
+    (EN): Automatically synchronizes your Grocy meal plan to a calendar with formatted recipe instructions.
     
-    Note: Preparation instructions are converted to a text list for maximum compatibility.
+    (DE): Synchronisiert den Grocy-Speiseplan automatisch mit einem Kalender inklusive formatierter Zubereitung.
 
   source_url: https://raw.githubusercontent.com/Barneybaer84/HA-Grocy-meal-calendar-sync/refs/heads/main/grocy-meal-calendar_sync.yaml
 
   domain: automation
   input:
     calendar_entity:
-      name: "Target Calendar"
-      description: "Select the calendar where meals should be added."
+      name: "Calendar / Kalender"
+      description: "Target calendar / Ziel-Kalender"
       selector:
         entity:
           filter:
             domain: calendar
     grocy_sensor:
-      name: "Grocy Meal Plan Sensor"
-      description: "The sensor providing the meal plan data (default: sensor.grocy_meal_plan)."
+      name: "Grocy Sensor"
+      description: "Meal plan sensor / Speiseplan-Sensor"
       default: sensor.grocy_meal_plan
       selector:
         entity:
           filter:
             domain: sensor
     execution_time:
-      name: "Sync Execution Time"
-      description: "At what time should the automation run every day?"
+      name: "Execution Time / Ausführungszeit"
+      description: "Daily sync time / Täglich um..."
       default: "02:00:00"
       selector:
         time: {}
     event_prefix:
-      name: "Calendar Event Prefix"
-      description: "Text prefix for the calendar entry (e.g., 'Meal: ')."
+      name: "Prefix / Präfix"
+      description: "Prefix for entries / Präfix für Einträge (e.g. 'Meal: ')"
       default: "Meal: "
       selector:
         text: {}
@@ -51,7 +49,6 @@ action:
       meal_sensor: !input grocy_sensor
       prefix: !input event_prefix
 
-  # Fetch existing calendar events for the next 7 days
   - target:
       entity_id: "{{ target_calendar }}"
     data:
@@ -72,9 +69,9 @@ action:
             target_summary: "{{ prefix }}{{ repeat.item.recipe.name }}"
             target_date: "{{ repeat.item.day.split('T')[0] }}"
             
-            # Logic to force line breaks and bullet points
+            # Logic for clean line breaks / Logik für saubere Zeilenumbrüche
             recipe_description: >
-              {% set desc = repeat.item.recipe.description | default('No instructions provided') %}
+              {% set desc = repeat.item.recipe.description | default('No instructions / Keine Zubereitung') %}
               {% set items = desc | replace('<li>', 'LINESTART- ') | replace('</li>', 'LINEEND') 
                                   | replace('<p>', 'LINESTART') | replace('</p>', 'LINEEND') 
                                   | replace('<br>', 'LINEENDLINESTART') | striptags %}
@@ -92,7 +89,6 @@ action:
               {{ events | selectattr('start', 'search', target_date) 
                         | selectattr('summary', '==', target_summary) | list }}
         
-        # Only create event if it doesn't already exist
         - condition: template
           value_template: "{{ existing_on_that_day | length == 0 }}"
 
