@@ -2,7 +2,7 @@
 
 This blueprint automates the synchronization of your **Grocy** meal plan with a Home Assistant calendar. It runs daily and ensures your dining schedule is always visible in your dashboard or calendar app.
 
-[![Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=DEINE_RAW_URL_HIER_EINFÜGEN)
+[![Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=[DEINE_RAW_URL_HIER_EINFÜGEN](https://raw.githubusercontent.com/Barneybaer84/HA-Grocy-meal-calendar-sync/refs/heads/main/grocy-meal-calendar_sync.yaml))
 
 ---
 
